@@ -8,12 +8,14 @@ import re
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 
-def preprocess(input_path, output_path):
+def preprocess(file_object, output_path):
     """
     Adjust the formatting of LOCATION lines so that the next two lines are indented.
     """
-    with open(input_path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+    #with open(file_object, 'r', encoding='utf-8') as f:
+    #    lines = f.readlines()
+
+    lines = file_object.read().decode('utf-8').split('\n')
 
     processed_lines = []
     i = 0
@@ -79,10 +81,9 @@ def parse_entry(content):
 
         # Find the day of the week
         locale.setlocale(locale.LC_TIME, "danish")
-        date_string = "10-11-2024"  # Format: DD-MM-YYYY
 
         # Parse the date
-        date_object = datetime.strptime(date_string, "%d-%m-%Y")
+        date_object = datetime.strptime(dato, "%d-%m-%Y")
 
         # Get the day of the week
         dag = date_object.strftime("%A").capitalize()  # Full day name (e.g., Saturday)
@@ -117,6 +118,8 @@ def fill_df(df, input_path):
     for entry in entries:
         df.loc[len(df)] = parse_entry(entry)
 
+    df["Scout"] = ""
+
     return df
 
 def to_excel(df, output_path):
@@ -143,3 +146,43 @@ def to_excel(df, output_path):
             cell.fill = blue_fill
 
     wb.save(output_path)
+
+
+def to_excel_test(df, buffer):
+    """
+    Converts a DataFrame to a styled Excel file and writes it to a BytesIO buffer.
+    """
+    # Replace problematic characters
+    df = df.applymap(lambda x: x.replace("��", "ø") if isinstance(x, str) else x)
+
+    # Process and sort the DataFrame
+    df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
+    df.sort_values(by=["Dato", "Tidspunkt"], ascending=[True, True], inplace=True)
+
+    # Save DataFrame to an Excel buffer
+    with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
+
+    # Load the workbook from the buffer
+    buffer.seek(0)
+    wb = load_workbook(buffer)
+    ws = wb.active
+
+    # Adjust column widths
+    ws.column_dimensions['C'].width = 11.5
+    ws.column_dimensions['E'].width = 30
+    ws.column_dimensions['G'].width = 22
+    ws.column_dimensions['H'].width = 22
+
+    # Define the blue fill for every second row
+    blue_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
+
+    # Apply blue background to every second row starting from row 2
+    for row in range(2, len(df) + 2, 2):  # Start from row 2 (header is row 1)
+        for cell in ws[row]:
+            cell.fill = blue_fill
+
+    # Save the workbook back to the buffer
+    buffer.seek(0)
+    wb.save(buffer)
+    buffer.seek(0)
