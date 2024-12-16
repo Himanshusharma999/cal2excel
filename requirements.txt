@@ -1,0 +1,4 @@
+ics
+pandas
+openpyxl
+streamlit

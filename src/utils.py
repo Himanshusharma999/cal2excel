@@ -127,7 +127,10 @@ def fill_df(df, input_path):
 
     # Split the data into entries by matching content between double quotes
     entries = re.findall(r'"(.*?)"', raw_data, re.DOTALL)
-    for entry in entries:
+    fixed_entries = [item.replace("*** IKKE TIDS FASTSAT ****\n\n", "") for item in entries]
+    pattern = r'\nInkl\. straffe: \d+-\d+'
+    cleaned_entries = [re.sub(pattern, "", item) for item in fixed_entries]
+    for entry in cleaned_entries:
         df.loc[len(df)] = parse_entry(entry)
 
     df["Scout"] = ""
@@ -165,7 +168,7 @@ def to_excel_test(df, buffer):
     Converts a DataFrame to a styled Excel file and writes it to a BytesIO buffer.
     """
     # Replace problematic characters
-    df = df.applymap(lambda x: x.replace("��", "ø") if isinstance(x, str) else x)
+    df = df.map(lambda x: x.replace("��", "ø") if isinstance(x, str) else x)
 
     # Process and sort the DataFrame
     df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
