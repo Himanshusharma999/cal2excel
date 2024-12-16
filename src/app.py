@@ -3,6 +3,7 @@ import utils
 import components.file_uploader
 from io import BytesIO
 import zipfile 
+import os
 
 def main():
     st.title("DBU Kalender til Excel")
@@ -21,6 +22,13 @@ def run_app():
                 utils.delete_files_in_folders(["fixed", "csvs", "excels"])
                 utils.preprocess(file, "/tmp/fixed_calendar.ics")
                 utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/descripted.csv")
+
+                if os.path.exists("/tmp/descripted.csv"):
+                    with open("/tmp/descripted.csv", "r") as f:
+                        content = f.read()
+                        st.write(content)  # Display the CSV content in the app for debugging
+                else:
+                    st.error("CSV file not found or empty!")
 
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
