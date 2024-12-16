@@ -14,7 +14,7 @@ def run_app():
 
     if uploaded_files:
         zip_buffer = BytesIO()
-        
+
         with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
             for idx, file in enumerate(uploaded_files):
                 st.success(f"Uploaded: {file.name}")
@@ -23,7 +23,7 @@ def run_app():
                 utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/fixed_calendar1.csv")
 
                 df = utils.mk_df()
-                df = utils.fill_df(df, "csvs/fixed_calendar.csv")
+                df = utils.fill_df(df, "/tmp/fixed_calendar.csv")
                 excel_name = df["Række"].iloc[0]
 
                 buffer = BytesIO()
