@@ -93,7 +93,7 @@ def parse_entry(content):
         årgang = content.split("\n")[0].split(" ")[0]  
 
         # Find the day of the week
-        locale.setlocale(locale.LC_TIME, "danish")
+        locale.setlocale(locale.LC_TIME, "da_DK.UTF-8")
 
         # Parse the date
         date_object = datetime.strptime(dato, "%d-%m-%Y")
