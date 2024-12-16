@@ -163,8 +163,8 @@ def fill_df_test(df, input_path):
 
     # Assuming that parse_entry returns a dict or list matching the columns in your DataFrame
     # Add all parsed entries to the DataFrame
-    df = df.append(data_to_add, ignore_index=True)
-
+    df = df._append(data_to_add, ignore_index=True)
+    
     # Optionally, add any default values or computed columns, e.g., the "Scout" column
     df["Scout"] = ""
 
