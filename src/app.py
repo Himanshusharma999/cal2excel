@@ -24,6 +24,7 @@ def run_app():
 
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
+                st.write(df)
                 excel_name = df["Række"].iloc[0]
 
                 buffer = BytesIO()
