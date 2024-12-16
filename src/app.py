@@ -20,10 +20,10 @@ def run_app():
                 st.success(f"Uploaded: {file.name}")
                 utils.delete_files_in_folders(["fixed", "csvs", "excels"])
                 utils.preprocess(file, "/tmp/fixed_calendar.ics")
-                utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/fixed_calendar1.csv")
+                utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/descripted.csv")
 
                 df = utils.mk_df()
-                df = utils.fill_df(df, "/tmp/fixed_calendar.csv")
+                df = utils.fill_df(df, "/tmp/descripted.csv")
                 excel_name = df["Række"].iloc[0]
 
                 buffer = BytesIO()
