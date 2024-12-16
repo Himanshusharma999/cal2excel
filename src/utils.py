@@ -56,6 +56,10 @@ def preprocess(file_object, output_path):
 
 def parse_ics_to_csv(ics_file, csv_file):
     """Parse ICS file and export events to CSV."""
+    output_dir = os.path.dirname(csv_file)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)  # Create the directory if it doesn't exist
+
     with open(ics_file, 'r', encoding='utf-8') as f:
         content = f.read()
         calendar = Calendar(content)
