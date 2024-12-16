@@ -1,27 +1,37 @@
 from ics import Calendar
 import csv
-import streamlit as st
+#import streamlit as st
 import pandas as pd
 from datetime import datetime
 import locale
 import re
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+import os
+import glob
 
 def preprocess(file_object, output_path):
     """
-    Adjust the formatting of LOCATION lines so that the next two lines are indented.
+    Adjust the formatting of LOCATION lines so that the next two lines are indented
+    and replace occurrences of "Ny Stadion" with Ny Stadion.
     """
-    #with open(file_object, 'r', encoding='utf-8') as f:
-    #    lines = f.readlines()
+    with open(file_object, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
 
-    lines = file_object.read().decode('utf-8').split('\n')
+    # Combine all lines into a single string for easier processing
+    content = ''.join(lines)
+
+    # Replace "Ny Stadion" with Ny Stadion
+    content = content.replace('"Ny Stadion"', 'Ny Stadion')
+
+    # Split the content back into lines
+    lines = content.splitlines()
 
     processed_lines = []
     i = 0
     while i < len(lines):
         line = lines[i]
-        processed_lines.append(line)
+        processed_lines.append(line + "\n")  # Ensure lines retain newline characters
 
         # Check if this line is a LOCATION line
         if line.startswith("LOCATION:"):
@@ -34,7 +44,7 @@ def preprocess(file_object, output_path):
                 i += 1
         i += 1
 
-    # Write the processed lines to a new file
+    # Write the processed lines back to the output file
     with open(output_path, 'w', encoding='utf-8') as f:
         f.writelines(processed_lines)
 
@@ -77,7 +87,7 @@ def parse_entry(content):
 
         # Extract league name (Række) and Årgang
         række = content.split("\n")[0].strip()
-        årgang = content.split("\n")[0].split(" ")[0]  # Hardcoded based on the description
+        årgang = content.split("\n")[0].split(" ")[0]  
 
         # Find the day of the week
         locale.setlocale(locale.LC_TIME, "danish")
@@ -186,3 +196,24 @@ def to_excel_test(df, buffer):
     buffer.seek(0)
     wb.save(buffer)
     buffer.seek(0)
+
+def delete_files_in_folders(folder_names):
+    """
+    Deletes all files inside the specified folders.
+    
+    Parameters:
+        folder_names (list): List of folder names (relative to script's directory).
+    """
+    for folder in folder_names:
+        if os.path.exists(folder) and os.path.isdir(folder):
+            # Find all files in the folder
+            files = glob.glob(os.path.join(folder, '*'))
+            for file in files:
+                if os.path.isfile(file):  # Only delete files
+                    try:
+                        os.remove(file)
+                        print(f"Deleted: {file}")
+                    except Exception as e:
+                        print(f"Error deleting {file}: {e}")
+        else:
+            print(f"Folder '{folder}' does not exist or is not a directory.")

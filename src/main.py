@@ -1,10 +1,12 @@
 import utils as f
 import pandas as pd
-import streamlit as st
 
-input_ics = "../icals/kampe5db2b479-c637-46cf-b23b-6fb2736f5352.ics"
-fixed_ics = "fixed/fixed_calendar13s2222.ics"
-output_csv = "csvs/calendar_events22s2222.csv"
+input_ics = "../icals/kampec8e03235-0e48-4760-9cf9-fbd67799bb74.ics"
+fixed_ics = "fixed/test.ics"
+output_csv = "csvs/test.csv"
+excel_output = "excels/test.xlsx"
+
+f.delete_files_in_folders(["fixed", "csvs", "excels"])
 
 f.preprocess(input_ics, fixed_ics)
 
@@ -14,4 +16,4 @@ df = f.mk_df()
 
 df = f.fill_df(df, output_csv)
 
-f.to_excel(df, "excels/test62222.xlsx")
+f.to_excel(df, excel_output)
