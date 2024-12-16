@@ -14,12 +14,13 @@ def run_app():
 
     if uploaded_files:
         zip_buffer = BytesIO()
+        
         with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
             for idx, file in enumerate(uploaded_files):
                 st.success(f"Uploaded: {file.name}")
                 utils.delete_files_in_folders(["fixed", "csvs", "excels"])
-                utils.preprocess(file, "fixed/fixed_calendar.ics")
-                utils.parse_ics_to_csv("fixed/fixed_calendar.ics", "csvs/fixed_calendar.csv")
+                utils.preprocess(file, "/tmp/fixed_calendar.ics")
+                utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/fixed_calendar1.csv")
 
                 df = utils.mk_df()
                 df = utils.fill_df(df, "csvs/fixed_calendar.csv")

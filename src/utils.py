@@ -17,10 +17,6 @@ def preprocess(file_object, output_path):
     """
     #with open(file_object, 'r', encoding='utf-8') as f:
     #    lines = f.readlines()
-
-    output_dir = os.path.dirname(output_path)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)  # Create the directory if it doesn't exist
     
     lines = file_object.read().decode('utf-8').split('\n')
 
@@ -56,9 +52,6 @@ def preprocess(file_object, output_path):
 
 def parse_ics_to_csv(ics_file, csv_file):
     """Parse ICS file and export events to CSV."""
-    output_dir = os.path.dirname(csv_file)
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)  # Create the directory if it doesn't exist
 
     with open(ics_file, 'r', encoding='utf-8') as f:
         content = f.read()
