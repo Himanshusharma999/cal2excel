@@ -17,6 +17,10 @@ def preprocess(file_object, output_path):
     """
     #with open(file_object, 'r', encoding='utf-8') as f:
     #    lines = f.readlines()
+
+    output_dir = os.path.dirname(output_path)
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)  # Create the directory if it doesn't exist
     
     lines = file_object.read().decode('utf-8').split('\n')
 
