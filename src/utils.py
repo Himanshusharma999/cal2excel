@@ -92,14 +92,15 @@ def parse_entry(content):
         række = content.split("\n")[0].strip()
         årgang = content.split("\n")[0].split(" ")[0]  
 
-        # Find the day of the week
-        
 
         # Parse the date
         date_object = datetime.strptime(dato, "%d-%m-%Y")
 
         # Get the day of the week
         dag = date_object.strftime("%A").capitalize()  # Full day name (e.g., Saturday)
+
+        # Convert to danish
+        dag = get_day_of_week_danish(dag)
 
         # Home and away teams
         hjem = content.split("\n")[3].split(" - ")[0]
@@ -116,7 +117,20 @@ def parse_entry(content):
     except Exception as e:
         print(f"Error parsing entry: {content}\n{e}")
         return None
-    
+
+def get_day_of_week_danish(day_of_week):
+    danish_days = {
+        "Monday": "Mandag",
+        "Tuesday": "Tirsdag",
+        "Wednesday": "Onsdag",
+        "Thursday": "Torsdag",
+        "Friday": "Fredag",
+        "Saturday": "Lørdag",
+        "Sunday": "Søndag"
+    }
+
+    return danish_days.get(day_of_week, day_of_week)
+
 def mk_df():
     df = pd.DataFrame(columns=["Årgang", "Dag", "Dato", "Tidspunkt", "Række", "Kampnr", "Hjem", "Ude", "Region"])
 
