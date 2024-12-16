@@ -144,6 +144,7 @@ def fill_df_test(df, input_path):
 
     # Split the data into entries by matching content between double quotes
     entries = re.findall(r'"(.*?)"', raw_data, re.DOTALL)
+    print(entries)
 
     # Process each entry: remove unwanted text and clean up the data
     fixed_entries = [item.replace("*** IKKE TIDS FASTSAT ****\n\n", "") for item in entries]
