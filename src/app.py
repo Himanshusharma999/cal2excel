@@ -24,7 +24,7 @@ def run_app():
                 utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/descripted.csv")
 
                 df = utils.mk_df()
-                df = utils.fill_df(df, "/tmp/descripted.csv")
+                df = utils.fill_df_test(df, "/tmp/descripted.csv")
                 st.write(df)
                 excel_name = df["Række"].iloc[0]
 
