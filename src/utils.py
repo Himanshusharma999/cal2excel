@@ -138,6 +138,37 @@ def fill_df(df, input_path):
 
     return df
 
+def fill_df_test(df, input_path):
+    with open(input_path, 'r', encoding='utf-8') as f:
+        raw_data = f.read()
+
+    # Split the data into entries by matching content between double quotes
+    entries = re.findall(r'"(.*?)"', raw_data, re.DOTALL)
+
+    # Process each entry: remove unwanted text and clean up the data
+    fixed_entries = [item.replace("*** IKKE TIDS FASTSAT ****\n\n", "") for item in entries]
+    
+    # Remove 'Inkl. straffe' part (match any score format like '6-7')
+    pattern = r'\nInkl\. straffe: \d+-\d+'
+    cleaned_entries = [re.sub(pattern, "", item) for item in fixed_entries]
+
+    # Convert the cleaned entries into a format suitable for DataFrame (e.g., a dictionary or list)
+    data_to_add = []
+    for entry in cleaned_entries:
+        # Call the function that extracts the structured data from each entry
+        parsed_data = parse_entry(entry)  # Assuming parse_entry is already handling extraction of structured data
+        print(parsed_data)
+        data_to_add.append(parsed_data)
+
+    # Assuming that parse_entry returns a dict or list matching the columns in your DataFrame
+    # Add all parsed entries to the DataFrame
+    df = df.append(data_to_add, ignore_index=True)
+
+    # Optionally, add any default values or computed columns, e.g., the "Scout" column
+    df["Scout"] = ""
+
+    return df
+
 def to_excel(df, output_path):
     df = df.map(lambda x: x.replace("��", "ø") if isinstance(x, str) else x)
     df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date

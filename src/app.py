@@ -23,13 +23,6 @@ def run_app():
                 utils.preprocess(file, "/tmp/fixed_calendar.ics")
                 utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/descripted.csv")
 
-                if os.path.exists("/tmp/descripted.csv"):
-                    with open("/tmp/descripted.csv", "r") as f:
-                        content = f.read()
-                        st.write(content)  # Display the CSV content in the app for debugging
-                else:
-                    st.error("CSV file not found or empty!")
-
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
                 st.write(df)
