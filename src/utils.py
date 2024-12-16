@@ -93,7 +93,12 @@ def parse_entry(content):
         årgang = content.split("\n")[0].split(" ")[0]  
 
         # Find the day of the week
-        locale.setlocale(locale.LC_TIME, "da_DK.UTF-8")
+        os.environ['LC_TIME'] = 'da_DK.UTF-8'
+        try:
+            locale.setlocale(locale.LC_TIME, 'da_DK.UTF-8')
+        except locale.Error:
+            # Fallback in case setting locale fails (for Streamlit Cloud environments)
+            locale.setlocale(locale.LC_TIME, 'C')
 
         # Parse the date
         date_object = datetime.strptime(dato, "%d-%m-%Y")
