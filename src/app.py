@@ -2,8 +2,7 @@ import streamlit as st
 import utils
 import components.file_uploader
 from io import BytesIO
-import zipfile 
-import os
+import zipfile
 
 def main():
     st.title("DBU Kalender til Excel")
@@ -25,7 +24,6 @@ def run_app():
 
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
-                st.write(df)
                 excel_name = df["Række"].iloc[0]
 
                 buffer = BytesIO()
