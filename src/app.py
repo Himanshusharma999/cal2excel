@@ -30,6 +30,10 @@ def run_app():
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
                 excel_name = df["Række"].iloc[0]
+                excel_name = excel_name.replace('_', ' ').strip()
+                if '2024' in excel_name:
+                    excel_name = excel_name.split('2024')[0].strip()
+                
                 
                 buffer = BytesIO()
                 utils.to_excel_test(df, buffer)
