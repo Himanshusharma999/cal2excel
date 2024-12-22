@@ -23,7 +23,6 @@ def run_app():
 
         with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
             for idx, file in enumerate(uploaded_files):
-                st.success(f"Uploaded: {file.name}")
                 utils.delete_files_in_folders(["fixed", "csvs", "excels"])
                 utils.preprocess(file, "/tmp/fixed_calendar.ics")
                 utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/descripted.csv")
@@ -31,7 +30,6 @@ def run_app():
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
                 excel_name = df["Række"].iloc[0]
-                st.write(f"Debug - Excel name: {excel_name}")
                 
                 buffer = BytesIO()
                 utils.to_excel_test(df, buffer)
@@ -46,9 +44,6 @@ def run_app():
                     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                     key=f"download_{idx}"  # Unique key for each download button
                 )                
-
-        # Finalize the ZIP file in memory
-        #zip_buffer.seek(0)
 
         # Single download button for the ZIP file
         st.download_button(
