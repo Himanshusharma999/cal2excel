@@ -92,7 +92,6 @@ def parse_entry(content):
         række = content.split("\n")[0].strip()
         årgang = content.split("\n")[0].split(" ")[0]  
 
-
         # Parse the date
         date_object = datetime.strptime(dato, "%d-%m-%Y")
 
