@@ -12,7 +12,7 @@ def fetch_ical_urls():
     """
     files_to_process = []
     
-    urls = st.text_area("Indtast iCal URLs (én URL per linje)")
+    urls = st.text_area("Indtast iCal URL (én URL per linje), tryk (cmd + enter) for at eksekvere")
     
     if urls and st.button("Hent kalendere"):
         for url in urls.strip().split('\n'):
