@@ -13,7 +13,7 @@ def run_app():
                              ["Upload filer", "Indtast URL'er"])
 
     # Add date filter option
-    filter_option = st.radio("Hvilke kampe vil du se?",
+    filter_option = st.radio("Hvilke kampe skal betragtes?",
                            ["Alle kampe", "Kun fremtidige kampe"])
 
     if input_method == "Upload filer":
