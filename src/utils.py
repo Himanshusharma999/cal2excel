@@ -10,7 +10,44 @@ from openpyxl.styles import PatternFill
 import os
 import glob
 
-def preprocess(file_object, output_path):
+def preprocess(file_object, output_buffer):
+    """
+    Adjust the formatting of LOCATION lines so that the next two lines are indented
+    and replace occurrences of "Ny Stadion" with Ny Stadion.
+    """
+    lines = file_object.read().decode('utf-8').split('\n')
+
+    # Combine all lines into a single string for easier processing
+    content = ''.join(lines)
+
+    # Replace "Ny Stadion" with Ny Stadion
+    content = content.replace('"Ny Stadion"', 'Ny Stadion')
+
+    # Split the content back into lines
+    lines = content.splitlines()
+
+    processed_lines = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        processed_lines.append(line + "\n")
+
+        # Check if this line is a LOCATION line
+        if line.startswith("LOCATION:"):
+            # Indent the next two lines if they exist
+            if i + 1 < len(lines) and not lines[i + 1].startswith(" "):
+                processed_lines.append(" " + lines[i + 1].strip() + "\n")
+                i += 1
+            if i + 1 < len(lines) and not lines[i + 1].startswith(" "):
+                processed_lines.append(" " + lines[i + 1].strip() + "\n")
+                i += 1
+        i += 1
+
+    # Write the processed lines to the output buffer
+    output_buffer.write(''.join(processed_lines).encode('utf-8'))
+    output_buffer.seek(0)
+
+def preprocess_test(file_object, output_path):
     """
     Adjust the formatting of LOCATION lines so that the next two lines are indented
     and replace occurrences of "Ny Stadion" with Ny Stadion.
