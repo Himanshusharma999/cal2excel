@@ -303,9 +303,10 @@ def to_excel_test(df, buffer):
 
     # Adjust column widths
     ws.column_dimensions['C'].width = 11.5
-    ws.column_dimensions['E'].width = 33
-    ws.column_dimensions['G'].width = 22
+    ws.column_dimensions['D'].width = 5
+    ws.column_dimensions['F'].width = 33
     ws.column_dimensions['H'].width = 22
+    ws.column_dimensions['I'].width = 22
 
     # Define the blue fill for every second row
     blue_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
