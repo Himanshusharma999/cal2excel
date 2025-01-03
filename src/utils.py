@@ -15,10 +15,10 @@ def preprocess(file_object, output_path):
     Adjust the formatting of LOCATION lines so that the next two lines are indented
     and replace occurrences of "Ny Stadion" with Ny Stadion.
     """
-    with open(file_object, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
+    #with open(file_object, 'r', encoding='utf-8') as f:
+    #    lines = f.readlines()
     
-    #lines = file_object.read().decode('utf-8').split('\n')
+    lines = file_object.read().decode('utf-8').split('\n')
 
     # Combine all lines into a single string for easier processing
     content = ''.join(lines)
