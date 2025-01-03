@@ -5,7 +5,7 @@ from io import BytesIO
 from datetime import datetime
 import pandas as pd
 def main():
-    st.title("DBU Kalender til Excel")
+    st.title("DBU Ical til Excel")
     run_app()
 
 def run_app():
