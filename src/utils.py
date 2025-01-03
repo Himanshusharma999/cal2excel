@@ -15,10 +15,10 @@ def preprocess(file_object, output_path):
     Adjust the formatting of LOCATION lines so that the next two lines are indented
     and replace occurrences of "Ny Stadion" with Ny Stadion.
     """
-    #with open(file_object, 'r', encoding='utf-8') as f:
-    #    lines = f.readlines()
+    with open(file_object, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
     
-    lines = file_object.read().decode('utf-8').split('\n')
+    #lines = file_object.read().decode('utf-8').split('\n')
 
     # Combine all lines into a single string for easier processing
     content = ''.join(lines)
@@ -49,6 +49,35 @@ def preprocess(file_object, output_path):
     # Write the processed lines back to the output file
     with open(output_path, 'w', encoding='utf-8') as f:
         f.writelines(processed_lines)
+
+def parse_ics_to_csv_test(ics_files, csv_file):
+    """Parse multiple ICS files and export events to CSV."""
+    all_events = []
+
+    # Handle single file or list of files
+    if not isinstance(ics_files, list):
+        ics_files = [ics_files]
+
+    # Collect events from all files
+    for ics_file in ics_files:
+        with open(ics_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+            calendar = Calendar(content)
+            all_events.extend(calendar.events)
+
+    # Sort events by date and time
+    all_events.sort(key=lambda x: x.begin)
+
+    # Write to CSV
+    with open(csv_file, mode='w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['Description']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for event in all_events:
+            writer.writerow({
+                'Description': event.description or ''
+            })
 
 def parse_ics_to_csv(ics_file, csv_file):
     """Parse ICS file and export events to CSV."""
@@ -95,6 +124,10 @@ def parse_entry(content):
         # Parse the date
         date_object = datetime.strptime(dato, "%d-%m-%Y")
 
+        # Get the week number
+        ugenr = date_object.strftime("%W")
+        ugenr = int(ugenr)
+
         # Get the day of the week
         dag = date_object.strftime("%A").capitalize()  # Full day name (e.g., Saturday)
 
@@ -112,7 +145,7 @@ def parse_entry(content):
             "Øst" if postnr < 5000 else "Vest"
         )
 
-        return [årgang, dag, dato, tidspunkt, række, kampnr, hjem, ude, region]
+        return [årgang, dag, dato, ugenr, tidspunkt, række, kampnr, hjem, ude, region]
     except Exception as e:
         print(f"Error parsing entry: {content}\n{e}")
         return None
@@ -131,7 +164,7 @@ def get_day_of_week_danish(day_of_week):
     return danish_days.get(day_of_week, day_of_week)
 
 def mk_df():
-    df = pd.DataFrame(columns=["Årgang", "Dag", "Dato", "Tidspunkt", "Række", "Kampnr", "Hjem", "Ude", "Region"])
+    df = pd.DataFrame(columns=["Årgang", "Dag", "Dato", "Uge", "Tidspunkt", "Række", "Kampnr", "Hjem", "Ude", "Region"])
 
     return df
 
@@ -194,9 +227,10 @@ def to_excel(df, output_path):
     ws = wb.active
 
     ws.column_dimensions['C'].width = 11.5
-    ws.column_dimensions['E'].width = 30
-    ws.column_dimensions['G'].width = 22
+    ws.column_dimensions['D'].width = 5
+    ws.column_dimensions['F'].width = 33
     ws.column_dimensions['H'].width = 22
+    ws.column_dimensions['I'].width = 22
 
     # Define the blue fill for every second row
     blue_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
