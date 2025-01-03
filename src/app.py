@@ -3,7 +3,7 @@ import utils
 import components.file_uploader
 from io import BytesIO
 from datetime import datetime
-
+import pandas as pd
 def main():
     st.title("DBU Kalender til Excel")
     run_app()
@@ -41,6 +41,7 @@ def run_app():
             # Filter for future games if selected
             if filter_option == "Kun fremtidige kampe":
                 today = datetime.now().date()
+                df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
                 df = df.loc[df['Dato'] >= today]
                 
                 if len(df) == 0:
