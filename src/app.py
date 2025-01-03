@@ -9,54 +9,8 @@ def main():
     st.title("DBU Kalender til Excel")
     run_app()
 
-def run_app_test():
-    input_method = st.radio("Hvordan vil du uploade kalendere?",
-                             ["Upload filer", "Indtast URL'er"])
 
-    if input_method == "Upload filer":
-        uploaded_files = components.file_uploader.upload_files()
-    elif input_method == "Indtast URL'er":
-        uploaded_files = components.file_uploader.fetch_ical_urls()
 
-    if uploaded_files:
-        zip_buffer = BytesIO()
-
-        with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
-            for idx, file in enumerate(uploaded_files):
-                utils.delete_files_in_folders(["fixed", "csvs", "excels"])
-                utils.preprocess(file, "/tmp/fixed_calendar.ics")
-                utils.parse_ics_to_csv("/tmp/fixed_calendar.ics", "/tmp/descripted.csv")
-
-                df = utils.mk_df()
-                df = utils.fill_df(df, "/tmp/descripted.csv")
-                excel_name = df["Række"].iloc[0]
-                excel_name = excel_name.replace('_', ' ').strip()
-                if '2024' in excel_name:
-                    excel_name = excel_name.split('2024')[0].strip()
-                
-                
-                buffer = BytesIO()
-                utils.to_excel_test(df, buffer)
-                buffer.seek(0)
-
-                zip_file.writestr(f"{excel_name}.xlsx", buffer.getvalue())
-
-                st.download_button(
-                    label=f"Download Excel fil",
-                    data=buffer,
-                    file_name=f"{excel_name}.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key=f"download_{idx}"  # Unique key for each download button
-                )                
-
-        # Single download button for the ZIP file
-        st.download_button(
-            label="Download alle excel filer i en ZIP fil",
-            data=zip_buffer,
-            file_name="calendars.zip",
-            mime="application/zip"
-        )
-        
 def run_app():
     input_method = st.radio("Hvordan vil du uploade kalendere?",
                              ["Upload filer", "Indtast URL'er"])
@@ -68,7 +22,7 @@ def run_app():
 
     if uploaded_files:
         # Process all files into a single CSV
-        utils.parse_ics_to_csv(uploaded_files, "/tmp/descripted.csv")
+        utils.parse_ics_to_csv_test(uploaded_files, "/tmp/descripted.csv")
 
         # Create single DataFrame with all events
         df = utils.mk_df()
