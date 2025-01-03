@@ -2,8 +2,7 @@ import streamlit as st
 import utils
 import components.file_uploader
 from io import BytesIO
-import zipfile
-import requests
+from datetime import datetime
 
 def main():
     st.title("DBU Kalender til Excel")
@@ -12,6 +11,10 @@ def main():
 def run_app():
     input_method = st.radio("Hvordan vil du uploade kalendere?",
                              ["Upload filer", "Indtast URL'er"])
+
+    # Add date filter option
+    filter_option = st.radio("Hvilke kampe vil du se?",
+                           ["Alle kampe", "Kun fremtidige kampe"])
 
     if input_method == "Upload filer":
         uploaded_files = components.file_uploader.upload_files()
@@ -35,12 +38,21 @@ def run_app():
             df = utils.mk_df()
             df = utils.fill_df(df, "/tmp/descripted.csv")
             
+            # Filter for future games if selected
+            if filter_option == "Kun fremtidige kampe":
+                today = datetime.now().date()
+                df = df.loc[df['Dato'] >= today]
+                
+                if len(df) == 0:
+                    st.warning("Ingen fremtidige kampe fundet")
+                    st.stop()
+            
             # Create Excel buffer
             buffer = BytesIO()
             utils.to_excel_test(df, buffer)
             buffer.seek(0)
 
-            st.success(f"Successfully processed {len(uploaded_files)} calendar(s)")
+            st.success(f"Successfully processed {len(df)} game(s)")
 
             # Single download button for the combined Excel
             st.download_button(
