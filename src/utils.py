@@ -60,10 +60,11 @@ def parse_ics_to_csv_test(ics_files, csv_file):
 
     # Collect events from all files
     for ics_file in ics_files:
-        with open(ics_file, 'r', encoding='utf-8') as f:
-            content = f.read()
-            calendar = Calendar(content)
-            all_events.extend(calendar.events)
+        # Read content directly from BytesIO object
+        content = ics_file.read().decode('utf-8')
+        ics_file.seek(0)  # Reset buffer position for potential reuse
+        calendar = Calendar(content)
+        all_events.extend(calendar.events)
 
     # Sort events by date and time
     all_events.sort(key=lambda x: x.begin)
