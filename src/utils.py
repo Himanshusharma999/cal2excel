@@ -157,7 +157,9 @@ def parse_entry(content):
 
         # Extract league name (Række) and Årgang
         række = content.split("\n")[0].strip()
-        årgang = content.split("\n")[0].split(" ")[0]  
+        årgang = content.split("\n")[0].split(" ")[0]
+        if not årgang.startswith("U"):
+            årgang = "Senior"
 
         # Parse the date
         date_object = datetime.strptime(dato, "%d-%m-%Y")
