@@ -6,7 +6,6 @@ from datetime import datetime
 import pandas as pd
 
 def main():
-    st.title("DBU Ical til Excel")
     run_app()
 
 def run_app():
@@ -14,8 +13,8 @@ def run_app():
     st.cache_data.clear()
 
     # Add a page title with description
-    st.title("DBU Kalender til Excel")
-    st.write("Upload dine DBU kalendere og få dem samlet i én Excel-fil")
+    st.title("DBU Ical til Excel")
+    st.write("Upload dine DBU Ical-filer/links og få dem samlet i en Excel-fil")
 
     # Create two columns for input options
     col1, col2 = st.columns(2)
@@ -66,14 +65,14 @@ def run_app():
                 buffer.seek(0)
 
             # Show success message with game count
-            st.success(f"Behandlet {len(df)} kamp(er) succesfuldt")
+            st.success(f"Behandlet {len(df)} kampe succesfuldt")
 
             # Show summary statistics
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric("Antal kampe", len(df))
             with col2:
-                st.metric("Antal hold", len(df['Hjem'].unique()) + len(df['Ude'].unique()))
+                st.metric("Antal Rækker", len(df['Række'].unique()))
             with col3:
                 st.metric("Antal uger", len(df['Uge'].unique()))
 
