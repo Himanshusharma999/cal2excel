@@ -27,7 +27,7 @@ def run_app():
 
     if input_method == "Upload filer":
         uploaded_files = components.file_uploader.upload_files()
-    elif input_method == "Indtast URL'er":
+    elif input_method == "Indtast links":
         uploaded_files = components.file_uploader.fetch_ical_urls()
 
     if uploaded_files and len(uploaded_files) > 0:
