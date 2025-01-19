@@ -47,47 +47,7 @@ def preprocess(file_object, output_buffer):
     output_buffer.write(''.join(processed_lines).encode('utf-8'))
     output_buffer.seek(0)
 
-def preprocess_test(file_object, output_path):
-    """
-    Adjust the formatting of LOCATION lines so that the next two lines are indented
-    and replace occurrences of "Ny Stadion" with Ny Stadion.
-    """
-    #with open(file_object, 'r', encoding='utf-8') as f:
-    #    lines = f.readlines()
-    
-    lines = file_object.read().decode('utf-8').split('\n')
-
-    # Combine all lines into a single string for easier processing
-    content = ''.join(lines)
-
-    # Replace "Ny Stadion" with Ny Stadion
-    content = content.replace('"Ny Stadion"', 'Ny Stadion')
-
-    # Split the content back into lines
-    lines = content.splitlines()
-
-    processed_lines = []
-    i = 0
-    while i < len(lines):
-        line = lines[i]
-        processed_lines.append(line + "\n")  # Ensure lines retain newline characters
-
-        # Check if this line is a LOCATION line
-        if line.startswith("LOCATION:"):
-            # Indent the next two lines if they exist
-            if i + 1 < len(lines) and not lines[i + 1].startswith(" "):
-                processed_lines.append(" " + lines[i + 1].strip() + "\n")
-                i += 1
-            if i + 1 < len(lines) and not lines[i + 1].startswith(" "):
-                processed_lines.append(" " + lines[i + 1].strip() + "\n")
-                i += 1
-        i += 1
-
-    # Write the processed lines back to the output file
-    with open(output_path, 'w', encoding='utf-8') as f:
-        f.writelines(processed_lines)
-
-def parse_ics_to_csv_test(ics_files, csv_file):
+def parse_ics_to_csv(ics_files, csv_file):
     """Parse multiple ICS files and export events to CSV."""
     all_events = []
 
@@ -116,26 +76,7 @@ def parse_ics_to_csv_test(ics_files, csv_file):
             writer.writerow({
                 'Description': event.description or ''
             })
-
-def parse_ics_to_csv(ics_file, csv_file):
-    """Parse ICS file and export events to CSV."""
-
-    with open(ics_file, 'r', encoding='utf-8') as f:
-        content = f.read()
-        calendar = Calendar(content)
-
-    # Open CSV file for writing
-    with open(csv_file, mode='w', newline='', encoding='utf-8') as csvfile:
-        fieldnames = ['Description']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        writer.writeheader()
-
-        for event in calendar.events:
-            writer.writerow({
-                'Description': event.description or ''
-            })
             
-
 def parse_entry(content):
     try:
         # Regex patterns to extract fields
@@ -224,66 +165,7 @@ def fill_df(df, input_path):
 
     return df
 
-def fill_df_test(df, input_path):
-    with open(input_path, 'r', encoding='utf-8') as f:
-        raw_data = f.read()
-
-    # Split the data into entries by matching content between double quotes
-    entries = re.findall(r'"(.*?)"', raw_data, re.DOTALL)
-    #print(entries)
-
-    # Process each entry: remove unwanted text and clean up the data
-    fixed_entries = [item.replace("*** IKKE TIDS FASTSAT ****\n\n", "") for item in entries]
-    
-    # Remove 'Inkl. straffe' part (match any score format like '6-7')
-    pattern = r'\nInkl\. straffe: \d+-\d+'
-    cleaned_entries = [re.sub(pattern, "", item) for item in fixed_entries]
-
-    # Convert the cleaned entries into a format suitable for DataFrame (e.g., a dictionary or list)
-    data_to_add = []
-    for entry in cleaned_entries:
-        # Call the function that extracts the structured data from each entry
-        parsed_data = parse_entry(entry)  # Assuming parse_entry is already handling extraction of structured data
-        print(parsed_data)
-        data_to_add.append(parsed_data)
-
-    # Assuming that parse_entry returns a dict or list matching the columns in your DataFrame
-    # Add all parsed entries to the DataFrame
-    df = df._append(data_to_add, ignore_index=True)
-    
-    # Optionally, add any default values or computed columns, e.g., the "Scout" column
-    df["Scout"] = ""
-
-    return df
-
-def to_excel(df, output_path):
-    df = df.map(lambda x: x.replace("��", "ø") if isinstance(x, str) else x)
-    df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
-    df.sort_values(by=["Dato", "Tidspunkt"], ascending=[True, True], inplace=True)
-    df.to_excel(f"{output_path}", index=False)
-
-    # Make columns wider
-    wb = load_workbook(output_path)
-    ws = wb.active
-
-    ws.column_dimensions['C'].width = 11.5
-    ws.column_dimensions['D'].width = 5
-    ws.column_dimensions['F'].width = 33
-    ws.column_dimensions['H'].width = 22
-    ws.column_dimensions['I'].width = 22
-
-    # Define the blue fill for every second row
-    blue_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
-
-    # Apply blue background to every second row starting from row 1 (Excel rows start at 1)
-    for row in range(1, len(df) + 2, 2):  # Start from row 1 (Excel row 1 corresponds to pandas header)
-        for cell in ws[row]:
-            cell.fill = blue_fill
-
-    wb.save(output_path)
-
-
-def to_excel_test(df, buffer):
+def to_excel(df, buffer):
     """
     Converts a DataFrame to a styled Excel file and writes it to a BytesIO buffer.
     """
@@ -293,7 +175,10 @@ def to_excel_test(df, buffer):
     # Process and sort the DataFrame
     df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
     df.sort_values(by=["Dato", "Tidspunkt"], ascending=[True, True], inplace=True)
-
+    
+    # Format back to dd-mm-yyyy string
+    df['Dato'] = df['Dato'].dt.strftime('%d-%m-%Y')
+    
     # Save DataFrame to an Excel buffer
     with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
         df.to_excel(writer, index=False)
