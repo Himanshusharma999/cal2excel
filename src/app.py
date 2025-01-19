@@ -43,7 +43,7 @@ def run_app():
                     processed_files.append(processed)
 
                 # Process all files into a single CSV
-                utils.parse_ics_to_csv_test(processed_files, "/tmp/descripted.csv")
+                utils.parse_ics_to_csv(processed_files, "/tmp/descripted.csv")
 
                 # Create single DataFrame with all events
                 df = utils.mk_df()
@@ -61,7 +61,7 @@ def run_app():
                 
                 # Create Excel buffer
                 buffer = BytesIO()
-                utils.to_excel_test(df, buffer)
+                utils.to_excel(df, buffer)
                 buffer.seek(0)
 
             # Show success message with game count
