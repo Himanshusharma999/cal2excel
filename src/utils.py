@@ -165,7 +165,7 @@ def parse_entry(content):
         date_object = datetime.strptime(dato, "%d-%m-%Y")
 
         # Get the week number
-        ugenr = date_object.strftime("%W")
+        ugenr = date_object.strftime("%V")
         ugenr = int(ugenr)
 
         # Get the day of the week
