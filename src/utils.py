@@ -176,9 +176,6 @@ def to_excel(df, buffer):
     df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
     df.sort_values(by=["Dato", "Tidspunkt"], ascending=[True, True], inplace=True)
     
-    # Format back to dd-mm-yyyy string
-    df['Dato'] = df['Dato'].dt.strftime('%d-%m-%Y')
-    
     # Save DataFrame to an Excel buffer
     with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
         df.to_excel(writer, index=False)
