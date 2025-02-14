@@ -24,9 +24,15 @@ def fetch_ical_urls():
                 
                 response = requests.get(url)
                 if response.status_code == 200:
+                    content = response.content.decode('utf-8')
+                    if 'BEGIN:VCALENDAR' not in content:
+                        st.error(f"Invalid iCal file: {url}")
+                        continue
+
                     file_like = BytesIO(response.content)
                     file_like.name = f"calendar_{len(files_to_process)}.ics"
                     files_to_process.append(file_like)
+
                 else:
                     st.error(f"Failed to fetch calendar from: {url}")
             except Exception as e:
