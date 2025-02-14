@@ -26,7 +26,7 @@ def fetch_ical_urls():
                 if response.status_code == 200:
                     content = response.content.decode('utf-8')
                     if 'BEGIN:VCALENDAR' not in content:
-                        st.error(f"Invalid iCal file: {url}")
+                        st.error(f"Følgende Ical link er enten ugyldigt eller udløbet: {url}")
                         continue
 
                     file_like = BytesIO(response.content)
