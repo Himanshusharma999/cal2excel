@@ -65,7 +65,7 @@ def run_app():
                 buffer.seek(0)
 
             # Show success message with game count
-            st.success(f"Behandlet {len(df)} kampe succesfuldt")
+            st.success(f"Behandlede {len(df)} kampe succesfuldt")
 
             # Show summary statistics
             col1, col2, col3 = st.columns(3)
