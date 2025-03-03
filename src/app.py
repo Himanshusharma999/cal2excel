@@ -17,13 +17,16 @@ def run_app():
     st.write("Upload dine DBU Ical-filer/links og få dem samlet i en Excel-fil")
 
     # Create two columns for input options
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         input_method = st.radio("Hvordan vil du uploade kalendere?",
                                 ["Upload filer", "Indtast links"])
     with col2:
         filter_option = st.radio("Hvilke kampe skal betragtes?",
                                ["Alle kampe", "Kun fremtidige kampe"])
+    with col3:
+        reg_filter_option = st.radio("Hvilken region ønsker du kampe fra",
+                                     ["Øst", "Vest", "Landsdækkende"])   
 
     if input_method == "Upload filer":
         uploaded_files = components.file_uploader.upload_files()
@@ -90,5 +93,5 @@ def run_app():
             # Log the full error for debugging
             st.exception(e)
     
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()

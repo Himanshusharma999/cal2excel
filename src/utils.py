@@ -132,7 +132,7 @@ def parse_entry(content):
         return None
 
 def get_day_of_week_danish(day_of_week):
-    danish_days = {
+    convert = {
         "Monday": "Mandag",
         "Tuesday": "Tirsdag",
         "Wednesday": "Onsdag",
@@ -142,7 +142,7 @@ def get_day_of_week_danish(day_of_week):
         "Sunday": "Søndag"
     }
 
-    return danish_days.get(day_of_week, day_of_week)
+    return convert.get(day_of_week, day_of_week)
 
 def mk_df():
     df = pd.DataFrame(columns=["Årgang", "Dag", "Dato", "Uge", "Tidspunkt", "Række", "Kampnr", "Hjem", "Ude", "Region"])
