@@ -26,7 +26,7 @@ def run_app():
                                ["Alle kampe", "Kun fremtidige kampe"])
     with col3:
         reg_filter_option = st.radio("Hvilken region ønsker du kampe fra?",
-                                     ["Øst", "Vest", "Landsdækkende"])   
+                                     ["Landsdækkende", "Øst", "Vest"])   
 
     if input_method == "Upload filer":
         uploaded_files = components.file_uploader.upload_files()
@@ -64,6 +64,8 @@ def run_app():
                 
                 if reg_filter_option == "Øst":
                     df = df[df['Region'] == "Øst"]
+                elif reg_filter_option == "Vest":
+                    df = df[df['Region'] == "Vest"]
 
                 # Create Excel buffer
                 buffer = BytesIO()
