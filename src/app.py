@@ -16,7 +16,7 @@ def run_app():
     st.title("DBU Ical til Excel")
     st.write("Upload dine DBU Ical-filer/links og få dem samlet i en Excel-fil")
 
-    # Create two columns for input options
+    # Create columns for input options
     col1, col2, col3 = st.columns(3)
     with col1:
         input_method = st.radio("Hvordan vil du uploade kalendere?",
@@ -25,7 +25,7 @@ def run_app():
         filter_option = st.radio("Hvilke kampe skal betragtes?",
                                ["Alle kampe", "Kun fremtidige kampe"])
     with col3:
-        reg_filter_option = st.radio("Hvilken region ønsker du kampe fra",
+        reg_filter_option = st.radio("Hvilken region ønsker du kampe fra?",
                                      ["Øst", "Vest", "Landsdækkende"])   
 
     if input_method == "Upload filer":
@@ -62,6 +62,9 @@ def run_app():
                         st.warning("Ingen fremtidige kampe fundet")
                         st.stop()
                 
+                if reg_filter_option == "Øst":
+                    df = df[df['Region'] == "Øst"]
+
                 # Create Excel buffer
                 buffer = BytesIO()
                 utils.to_excel(df, buffer)
