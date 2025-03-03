@@ -20,10 +20,10 @@ def run_app():
     col1, col2, col3 = st.columns(3)
     with col1:
         input_method = st.radio("Hvordan vil du uploade kalendere?",
-                                ["Upload filer", "Indtast links"])
+                                ["Indtast links", "Upload filer"])
     with col2:
         filter_option = st.radio("Hvilke kampe skal betragtes?",
-                               ["Alle kampe", "Kun fremtidige kampe"])
+                               ["Kun fremtidige kampe", "Alle kampe"])
     with col3:
         reg_filter_option = st.radio("Hvilken region ønsker du kampe fra?",
                                      ["Landsdækkende", "Øst", "Vest"])   
