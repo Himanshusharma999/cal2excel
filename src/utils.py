@@ -204,24 +204,3 @@ def to_excel(df, buffer):
     buffer.seek(0)
     wb.save(buffer)
     buffer.seek(0)
-
-def delete_files_in_folders(folder_names):
-    """
-    Deletes all files inside the specified folders.
-    
-    Parameters:
-        folder_names (list): List of folder names (relative to script's directory).
-    """
-    for folder in folder_names:
-        if os.path.exists(folder) and os.path.isdir(folder):
-            # Find all files in the folder
-            files = glob.glob(os.path.join(folder, '*'))
-            for file in files:
-                if os.path.isfile(file):  # Only delete files
-                    try:
-                        os.remove(file)
-                        print(f"Deleted: {file}")
-                    except Exception as e:
-                        print(f"Error deleting {file}: {e}")
-        else:
-            print(f"Folder '{folder}' does not exist or is not a directory.")
