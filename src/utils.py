@@ -17,7 +17,7 @@ def preprocess(file_object, output_buffer):
     """
     lines = file_object.read().decode('utf-8').split('\n')
 
-    # Combine all lines into a single string for easier processing
+    # Combine all lines into a single string
     content = ''.join(lines)
 
     # Replace "Ny Stadion" with Ny Stadion
@@ -55,9 +55,9 @@ def parse_ics_to_csv(ics_files, csv_file):
     if not isinstance(ics_files, list):
         ics_files = [ics_files]
 
-    # Collect events from all files
+    # Collect events 
     for ics_file in ics_files:
-        # Read content directly from BytesIO object
+        # Read content 
         content = ics_file.read().decode('utf-8')
         ics_file.seek(0)  # Reset buffer position for potential reuse
         calendar = Calendar(content)
@@ -66,7 +66,7 @@ def parse_ics_to_csv(ics_files, csv_file):
     # Sort events by date and time
     all_events.sort(key=lambda x: x.begin)
 
-    # Write to CSV
+    # Write to csv format
     with open(csv_file, mode='w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['Description']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -153,7 +153,7 @@ def fill_df(df, input_path):
     with open(input_path, 'r', encoding='utf-8') as f:
         raw_data = f.read()
 
-    # Split the data into entries by matching content between double quotes
+    # Split the data into entries
     entries = re.findall(r'"(.*?)"', raw_data, re.DOTALL)
     fixed_entries = [item.replace("*** IKKE TIDS FASTSAT ****\n\n", "") for item in entries]
     pattern = r'\nInkl\. straffe: \d+-\d+'
@@ -169,18 +169,18 @@ def to_excel(df, buffer):
     """
     Converts a DataFrame to a styled Excel file and writes it to a BytesIO buffer.
     """
-    # Replace problematic characters
+    # Replace non standard characters
     df = df.map(lambda x: x.replace("��", "ø") if isinstance(x, str) else x)
 
     # Process and sort the DataFrame
     df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
     df.sort_values(by=["Dato", "Tidspunkt"], ascending=[True, True], inplace=True)
     
-    # Save DataFrame to an Excel buffer
+    # Save DF to an Excel buffer
     with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
         df.to_excel(writer, index=False)
 
-    # Load the workbook from the buffer
+    # Load buffer
     buffer.seek(0)
     wb = load_workbook(buffer)
     ws = wb.active
@@ -192,15 +192,13 @@ def to_excel(df, buffer):
     ws.column_dimensions['H'].width = 22
     ws.column_dimensions['I'].width = 22
 
-    # Define the blue fill for every second row
+    # Blue fill for every second row
     blue_fill = PatternFill(start_color="ADD8E6", end_color="ADD8E6", fill_type="solid")
-
-    # Apply blue background to every second row starting from row 2
     for row in range(2, len(df) + 2, 2):  # Start from row 2 (header is row 1)
         for cell in ws[row]:
             cell.fill = blue_fill
 
-    # Save the workbook back to the buffer
+    # Save back to the buffer
     buffer.seek(0)
     wb.save(buffer)
     buffer.seek(0)

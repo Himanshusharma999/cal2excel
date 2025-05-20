@@ -9,14 +9,14 @@ def main():
     run_app()
 
 def run_app():
-    # Clear cache
+    # Cache
     st.cache_data.clear()
 
-    # Add a page title with description
+    # Headers
     st.title("DBU Ical til Excel")
     st.write("Upload dine DBU Ical-filer/links og få dem samlet i en Excel-fil")
 
-    # Create columns for input options
+    # Input options
     col1, col2, col3 = st.columns(3)
     with col1:
         input_method = st.radio("Hvordan vil du uploade kalendere?",
@@ -35,9 +35,9 @@ def run_app():
 
     if uploaded_files and len(uploaded_files) > 0:
         try:
-            # Show processing status
+            # Process status
             with st.spinner('Behandler kalendere...'):
-                # Preprocess each file
+                # Preprocess
                 processed_files = []
                 for file in uploaded_files:
                     processed = BytesIO()
@@ -52,7 +52,7 @@ def run_app():
                 df = utils.mk_df()
                 df = utils.fill_df(df, "/tmp/descripted.csv")
                 
-                # Filter for future games if selected
+                # Filter for future games 
                 if filter_option == "Kun fremtidige kampe":
                     today = datetime.now().date()
                     df['Dato'] = pd.to_datetime(df['Dato'], format='%d-%m-%Y').dt.date
@@ -62,20 +62,21 @@ def run_app():
                         st.warning("Ingen fremtidige kampe fundet")
                         st.stop()
                 
+                # Filter for regions
                 if reg_filter_option == "Øst":
                     df = df[df['Region'] == "Øst"]
                 elif reg_filter_option == "Vest":
                     df = df[df['Region'] == "Vest"]
 
-                # Create Excel buffer
+                # Excel buffer
                 buffer = BytesIO()
                 utils.to_excel(df, buffer)
                 buffer.seek(0)
 
-            # Show success message with game count
+            # Success message
             st.success(f"Behandlede {len(df)} kampe succesfuldt")
 
-            # Show summary statistics
+            # Summary statistics
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric("Antal kampe", len(df))
@@ -84,18 +85,17 @@ def run_app():
             with col3:
                 st.metric("Antal uger", len(df['Uge'].unique()))
 
-            # Download button with clear call-to-action
+            # Download button 
             st.download_button(
                 label="📥 Download samlet Excel fil",
                 data=buffer,
                 file_name="combined_calendar.xlsx",
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                help="Klik her for at downloade alle kampe i én Excel-fil"
+                help="Klik her for at downloade alle kampe i en Excel-fil"
             )
 
         except Exception as e:
             st.error(f"Der opstod en fejl: {str(e)}")
-            # Log the full error for debugging
             st.exception(e)
     
 if __name__ == "__main__": 
