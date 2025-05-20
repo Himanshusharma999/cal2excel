@@ -80,44 +80,44 @@ def parse_ics_to_csv(ics_files, csv_file):
 def parse_entry(content):
     try:
         # Regex patterns to extract fields
-        kampnr_pattern = r"Kampnr (\d+)"
-        date_time_pattern = r"(\d{2}-\d{2}-\d{4}) kl\. (\d{2}:\d{2})"
+        mnr_pat = r"Kampnr (\d+)"
+        dt_pat = r"(\d{2}-\d{2}-\d{4}) kl\. (\d{2}:\d{2})"
 
         # Extract data using regex
-        kampnr_match = re.search(kampnr_pattern, content)
-        date_time_match = re.search(date_time_pattern, content)
+        mnr_match = re.search(mnr_pat, content)
+        dt_match = re.search(dt_pat, content)
 
         # Assign default values if matches are missing
-        kampnr = kampnr_match.group(1) if kampnr_match else "Unknown"
-        kampnr = int(kampnr)
-        dato, tidspunkt = (
-            (date_time_match.group(1), date_time_match.group(2))
-            if date_time_match
+        mnr = mnr_match.group(1) if mnr_match else "Unknown"
+        mnr = int(mnr)
+        date, time = (
+            (dt_match.group(1), dt_match.group(2))
+            if dt_match
             else ("Unknown", "Unknown")
         )
 
         # Extract league name (Række) and Årgang
-        række = content.split("\n")[0].strip()
-        årgang = content.split("\n")[0].split(" ")[0]
-        if not årgang.startswith("U"):
-            årgang = "Senior"
+        div = content.split("\n")[0].strip()
+        year = content.split("\n")[0].split(" ")[0]
+        if not year.startswith("U"):
+            year = "Senior"
 
         # Parse the date
-        date_object = datetime.strptime(dato, "%d-%m-%Y")
+        date_object = datetime.strptime(date, "%d-%m-%Y")
 
         # Get the week number
-        ugenr = date_object.strftime("%V")
-        ugenr = int(ugenr)
+        weeknr = date_object.strftime("%V")
+        weeknr = int(weeknr)
 
         # Get the day of the week
-        dag = date_object.strftime("%A").capitalize()  # Full day name (e.g., Saturday)
+        wk_date = date_object.strftime("%A").capitalize()  # Full day name (e.g., Saturday)
 
         # Convert to danish
-        dag = get_day_of_week_danish(dag)
+        wk_date = get_day_of_week_danish(wk_date)
 
         # Home and away teams
-        hjem = content.split("\n")[3].split(" - ")[0]
-        ude = content.split("\n")[3].split(" - ")[1]
+        home = content.split("\n")[3].split(" - ")[0]
+        away = content.split("\n")[3].split(" - ")[1]
 
         # Region
         postnr = content.split("\n")[7].split(" ")[0]
@@ -126,7 +126,7 @@ def parse_entry(content):
             "Øst" if postnr < 5000 else "Vest"
         )
 
-        return [årgang, dag, dato, ugenr, tidspunkt, række, kampnr, hjem, ude, region]
+        return [year, wk_date, date, weeknr, time, div, mnr, home, away, region]
     except Exception as e:
         print(f"Error parsing entry: {content}\n{e}")
         return None
