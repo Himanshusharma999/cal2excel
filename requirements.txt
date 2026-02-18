@@ -1,6 +1,5 @@
-ics
+streamlit
 pandas
 openpyxl
-streamlit
-altair==4.2.2
-tatsu==4.4.0
+altair
+icalendar
