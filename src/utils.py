@@ -1,4 +1,4 @@
-from ics import Calendar
+from icalendar import Calendar
 import csv
 #import streamlit as st
 import pandas as pd
@@ -48,34 +48,32 @@ def preprocess(file_object, output_buffer):
     output_buffer.seek(0)
 
 def parse_ics_to_csv(ics_files, csv_file):
-    """Parse multiple ICS files and export events to CSV."""
+    """Parse multiple ICS files and export events to CSV using icalendar."""
     all_events = []
 
-    # Handle single file or list of files
     if not isinstance(ics_files, list):
         ics_files = [ics_files]
 
-    # Collect events 
     for ics_file in ics_files:
-        # Read content 
-        content = ics_file.read().decode('utf-8')
-        ics_file.seek(0)  # Reset buffer position for potential reuse
-        calendar = Calendar(content)
-        all_events.extend(calendar.events)
+        content = ics_file.read()
+        ics_file.seek(0)
 
-    # Sort events by date and time
-    all_events.sort(key=lambda x: x.begin)
+        calendar = Calendar.from_ical(content)
 
-    # Write to csv format
+        for component in calendar.walk():
+            if component.name == "VEVENT":
+                description = component.get("description")
+                if description:
+                    all_events.append(str(description))
+
+    # Write to CSV
     with open(csv_file, mode='w', newline='', encoding='utf-8') as csvfile:
         fieldnames = ['Description']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
 
-        for event in all_events:
-            writer.writerow({
-                'Description': event.description or ''
-            })
+        for desc in all_events:
+            writer.writerow({'Description': desc})
             
 def parse_entry(content):
     try:
@@ -202,3 +200,4 @@ def to_excel(df, buffer):
     buffer.seek(0)
     wb.save(buffer)
     buffer.seek(0)
+
